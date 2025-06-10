@@ -59,7 +59,7 @@ public class GameLogic {
             if (!playingSecondHand) {
                 firstHandCompleted = true;
             }
-            dealerTurn();
+            // dealerTurn(); // Ta linia jest celowo usunięta na potrzeby animacji w GUI
         }
     }
 
@@ -80,6 +80,21 @@ public class GameLogic {
         System.out.println("Dealer Turn Completed: Dealer Hand=" + dealer.getHand() + ", Value=" + dealer.getHandValue());
     }
 
+    // POPRAWIONA METODA - teraz sprawdza, czy gracz już kupił ubezpieczenie
+    public boolean canOfferInsurance() {
+        boolean dealerHasAceUp = !dealer.getHand().isEmpty() && dealer.getHand().get(1).getRank().equals("A");
+        boolean playerHasNotBoughtInsurance = player.getInsuranceBet() == 0;
+        return dealerHasAceUp && playerHasNotBoughtInsurance;
+    }
+
+    public void buyInsurance() {
+        int insuranceBet = player.getBet() / 2;
+        if (player.getMoney() >= insuranceBet) {
+            player.setMoney(player.getMoney() - insuranceBet);
+            player.setInsuranceBet(insuranceBet);
+        }
+    }
+
     public boolean isPlayerBusted() {
         return playingSecondHand ? player.isSecondHandBusted() : player.isBusted();
     }
@@ -98,11 +113,16 @@ public class GameLogic {
             if (hasBlackjack(dealer)) {
                 player.setMoney(player.getMoney() + originalBet);
                 player.clearBet();
+                player.incrementRoundsPlayed();
                 return "Remis! Odzyskujesz " + originalBet + " żetonów.";
             } else {
                 int winnings = (int)(originalBet * 2.5);
                 player.setMoney(player.getMoney() + winnings);
                 player.clearBet();
+                player.incrementRoundsPlayed();
+                player.incrementBlackjacks();
+                player.addWon(winnings);
+                player.incrementWins();
                 return "Blackjack! Wygrałeś " + winnings + " żetonów!";
             }
         }
@@ -113,9 +133,21 @@ public class GameLogic {
         StringBuilder result = new StringBuilder();
         int originalBet = player.getBet();
 
+        player.incrementRoundsPlayed();
+
+        if (player.getInsuranceBet() > 0 && hasBlackjack(dealer)) {
+            int insuranceWin = player.getInsuranceBet() * 3;
+            player.setMoney(player.getMoney() + insuranceWin);
+            result.append("Ubezpieczenie: Wygrałeś ").append(insuranceWin).append(" żetonów!\n");
+        } else if (player.getInsuranceBet() > 0) {
+            result.append("Ubezpieczenie: Straciłeś ").append(player.getInsuranceBet()).append(" żetonów.\n");
+        }
+        player.clearInsuranceBet();
+
         result.append("Pierwsza ręka: ");
         if (player.isBusted()) {
             result.append("Przegrałeś! Straciłeś ").append(originalBet).append(" żetonów.\n");
+            player.addLost(originalBet);
         } else if (hasBlackjack(player)) {
             if (hasBlackjack(dealer)) {
                 player.setMoney(player.getMoney() + originalBet);
@@ -124,11 +156,16 @@ public class GameLogic {
                 int winnings = (int)(originalBet * 2.5);
                 player.setMoney(player.getMoney() + winnings);
                 result.append("Blackjack! Wygrałeś ").append(winnings).append(" żetonów!\n");
+                player.incrementBlackjacks();
+                player.addWon(winnings);
+                player.incrementWins();
             }
         } else if (dealer.isBusted()) {
             int winnings = originalBet * 2;
             player.setMoney(player.getMoney() + winnings);
             result.append("Wygrałeś! Zdobyłeś ").append(winnings).append(" żetonów!\n");
+            player.addWon(winnings);
+            player.incrementWins();
         } else {
             int playerValue = player.getHandValue();
             int dealerValue = dealer.getHandValue();
@@ -136,8 +173,11 @@ public class GameLogic {
                 int winnings = originalBet * 2;
                 player.setMoney(player.getMoney() + winnings);
                 result.append("Wygrałeś! Zdobyłeś ").append(winnings).append(" żetonów!\n");
+                player.addWon(winnings);
+                player.incrementWins();
             } else if (dealerValue > playerValue) {
                 result.append("Przegrałeś! Straciłeś ").append(originalBet).append(" żetonów.\n");
+                player.addLost(originalBet);
             } else {
                 player.setMoney(player.getMoney() + originalBet);
                 result.append("Remis! Odzyskujesz ").append(originalBet).append(" żetonów.\n");
@@ -148,6 +188,7 @@ public class GameLogic {
             result.append("Druga ręka: ");
             if (player.isSecondHandBusted()) {
                 result.append("Przegrałeś! Straciłeś ").append(originalBet).append(" żetonów.\n");
+                player.addLost(originalBet);
             } else if (player.getSecondHand().size() == 2 && player.getSecondHandValue() == 21) {
                 if (hasBlackjack(dealer)) {
                     player.setMoney(player.getMoney() + originalBet);
@@ -156,11 +197,16 @@ public class GameLogic {
                     int winnings = (int)(originalBet * 2.5);
                     player.setMoney(player.getMoney() + winnings);
                     result.append("Blackjack! Wygrałeś ").append(winnings).append(" żetonów!\n");
+                    player.incrementBlackjacks();
+                    player.addWon(winnings);
+                    player.incrementWins();
                 }
             } else if (dealer.isBusted()) {
                 int winnings = originalBet * 2;
                 player.setMoney(player.getMoney() + winnings);
                 result.append("Wygrałeś! Zdobyłeś ").append(winnings).append(" żetonów!\n");
+                player.addWon(winnings);
+                player.incrementWins();
             } else {
                 int playerValue = player.getSecondHandValue();
                 int dealerValue = dealer.getHandValue();
@@ -168,8 +214,11 @@ public class GameLogic {
                     int winnings = originalBet * 2;
                     player.setMoney(player.getMoney() + winnings);
                     result.append("Wygrałeś! Zdobyłeś ").append(winnings).append(" żetonów!\n");
+                    player.addWon(winnings);
+                    player.incrementWins();
                 } else if (dealerValue > playerValue) {
                     result.append("Przegrałeś! Straciłeś ").append(originalBet).append(" żetonów.\n");
+                    player.addLost(originalBet);
                 } else {
                     player.setMoney(player.getMoney() + originalBet);
                     result.append("Remis! Odzyskujesz ").append(originalBet).append(" żetonów.\n");
@@ -180,15 +229,15 @@ public class GameLogic {
         player.clearBet();
         playingSecondHand = false;
         firstHandCompleted = false;
-        player.clearHand(); // Czyść rękę gracza
-        dealer.clearHand(); // Czyść rękę krupiera
-        dealerTurnCompleted = false; // Resetuj stan tury krupiera
+        player.clearHand();
+        dealer.clearHand();
+        dealerTurnCompleted = false;
         System.out.println("Round Result: " + result.toString());
         return result.toString();
     }
 
     public void resetGame() {
-        this.player = new Player(); // Nowy gracz z 1000 żetonów
+        this.player = new Player();
         this.dealer = new Dealer();
         this.deck = new Deck();
         this.dealerTurnCompleted = false;

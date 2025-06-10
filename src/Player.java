@@ -10,6 +10,12 @@ public class Player {
     private boolean isSecondHandValueValid;
     private int money;
     private int bet;
+    private int insuranceBet;
+    private int roundsPlayed;
+    private int totalWon;
+    private int totalLost;
+    private int blackjacks;
+    private int wins;
 
     public Player() {
         this.hand = new ArrayList<>();
@@ -20,6 +26,12 @@ public class Player {
         this.isSecondHandValueValid = false;
         this.money = 1000;
         this.bet = 0;
+        this.insuranceBet = 0;
+        this.roundsPlayed = 0;
+        this.totalWon = 0;
+        this.totalLost = 0;
+        this.blackjacks = 0;
+        this.wins = 0;
     }
 
     public void addCard(Card card) {
@@ -139,6 +151,18 @@ public class Player {
         this.bet = 0;
     }
 
+    public int getInsuranceBet() {
+        return insuranceBet;
+    }
+
+    public void setInsuranceBet(int bet) {
+        this.insuranceBet = bet;
+    }
+
+    public void clearInsuranceBet() {
+        this.insuranceBet = 0;
+    }
+
     public boolean canDoubleDown() {
         return hand.size() == 2 && secondHand.isEmpty() && money >= bet;
     }
@@ -147,12 +171,56 @@ public class Player {
         if (hand.size() == 2 && secondHand.isEmpty() && money >= bet) {
             Card card1 = hand.get(0);
             Card card2 = hand.get(1);
-            return card1.getRank().equals(card2.getRank()); // Sprawdzaj rangę, nie wartość
+            return card1.getRank().equals(card2.getRank());
         }
         return false;
     }
 
     public boolean hasSecondHand() {
         return !secondHand.isEmpty();
+    }
+
+    public void incrementRoundsPlayed() {
+        roundsPlayed++;
+    }
+
+    public void addWon(int amount) {
+        totalWon += amount;
+    }
+
+    public void addLost(int amount) {
+        totalLost += amount;
+    }
+
+    public void incrementBlackjacks() {
+        blackjacks++;
+    }
+
+    public void incrementWins() {
+        wins++;
+    }
+
+    public int getRoundsPlayed() {
+        return roundsPlayed;
+    }
+
+    public int getTotalWon() {
+        return totalWon;
+    }
+
+    public int getTotalLost() {
+        return totalLost;
+    }
+
+    public int getBlackjacks() {
+        return blackjacks;
+    }
+
+    public int getWins() {
+        return wins;
+    }
+
+    public double getWinPercentage() {
+        return roundsPlayed == 0 ? 0 : (double) wins / roundsPlayed * 100;
     }
 }
