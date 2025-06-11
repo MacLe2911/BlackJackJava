@@ -59,7 +59,7 @@ public class GameLogic {
             if (!playingSecondHand) {
                 firstHandCompleted = true;
             }
-            // dealerTurn(); // Ta linia jest celowo usunięta na potrzeby animacji w GUI
+            // dealerTurn(); //Usuniete na potrzeby animacji
         }
     }
 
@@ -80,7 +80,6 @@ public class GameLogic {
         System.out.println("Dealer Turn Completed: Dealer Hand=" + dealer.getHand() + ", Value=" + dealer.getHandValue());
     }
 
-    // POPRAWIONA METODA - teraz sprawdza, czy gracz już kupił ubezpieczenie
     public boolean canOfferInsurance() {
         boolean dealerHasAceUp = !dealer.getHand().isEmpty() && dealer.getHand().get(1).getRank().equals("A");
         boolean playerHasNotBoughtInsurance = player.getInsuranceBet() == 0;

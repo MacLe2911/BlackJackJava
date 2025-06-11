@@ -1,5 +1,4 @@
 public class Card {
-    //Single card
     private String suit;
     private String rank;
     private String imagePath;
@@ -27,7 +26,7 @@ public class Card {
             case "J": case "Q": case "K":
                 return 10;
             case "A":
-                return 11; //11 or 1 depends, changing in game logic
+                return 11; //11 lub 1, zmieniamy w samej grze
             default:
                 return Integer.parseInt(rank);
         }

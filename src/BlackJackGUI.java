@@ -302,7 +302,7 @@ public class BlackJackGUI extends Application {
         toggleBetting(false);
         updateUI();
 
-        Scene scene = new Scene(mainStackPane, 900, 600);
+        Scene scene = new Scene(mainStackPane, 1100, 600);
         primaryStage.setTitle("Blackjack - Leśniewski Maciej");
         primaryStage.setScene(scene);
         primaryStage.show();
@@ -371,10 +371,10 @@ public class BlackJackGUI extends Application {
         Button button = new Button(text);
         int chipValue = Integer.parseInt(text);
 
-        button.setStyle(String.format("-fx-background-color: linear-gradient(to bottom, %s, %s); -fx-text-fill: white; -fx-font-size: 14; -fx-shape: 'M0,50 A50,50 0 1,1 100,50 A50,50 0 1,1 0,50 Z'; -fx-background-radius: 50; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.5), 10, 0, 0, 2);", colorStart, colorEnd));
+        button.setStyle(String.format("-fx-background-color: linear-gradient(to bottom, %s, %s); -fx-text-fill: white; -fx-font-size: 14; -fx-font-weight: bold; -fx-shape: 'M0,50 A50,50 0 1,1 100,50 A50,50 0 1,1 0,50 Z'; -fx-background-radius: 50; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.5), 10, 0, 0, 2); ", colorStart, colorEnd));
         button.setPrefSize(50, 50);
-        button.setOnMouseEntered(e -> button.setStyle(String.format("-fx-background-color: linear-gradient(to bottom, %s, %s); -fx-text-fill: white; -fx-font-size: 14; -fx-shape: 'M0,50 A50,50 0 1,1 100,50 A50,50 0 1,1 0,50 Z'; -fx-background-radius: 50; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.8), 15, 0, 0, 3);", lightenColor(colorStart), lightenColor(colorEnd))));
-        button.setOnMouseExited(e -> button.setStyle(String.format("-fx-background-color: linear-gradient(to bottom, %s, %s); -fx-text-fill: white; -fx-font-size: 14; -fx-shape: 'M0,50 A50,50 0 1,1 100,50 A50,50 0 1,1 0,50 Z'; -fx-background-radius: 50; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.5), 10, 0, 0, 2);", colorStart, colorEnd)));
+        button.setOnMouseEntered(e -> button.setStyle(String.format("-fx-background-color: linear-gradient(to bottom, %s, %s); -fx-text-fill: white; -fx-font-size: 14; -fx-font-weight: bold; -fx-shape: 'M0,50 A50,50 0 1,1 100,50 A50,50 0 1,1 0,50 Z'; -fx-background-radius: 50; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.8), 15, 0, 0, 3);", lightenColor(colorStart), lightenColor(colorEnd))));
+        button.setOnMouseExited(e -> button.setStyle(String.format("-fx-background-color: linear-gradient(to bottom, %s, %s); -fx-text-fill: white; -fx-font-size: 14; -fx-font-weight: bold; -fx-shape: 'M0,50 A50,50 0 1,1 100,50 A50,50 0 1,1 0,50 Z'; -fx-background-radius: 50; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.5), 10, 0, 0, 2);", colorStart, colorEnd)));
 
         button.setOnMouseClicked(e -> {
             if (e.getButton() == MouseButton.PRIMARY) {
