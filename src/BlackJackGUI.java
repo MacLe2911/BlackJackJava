@@ -25,7 +25,6 @@ import javafx.scene.text.Text;
 import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-
 import java.net.URL;
 import java.util.List;
 
@@ -69,9 +68,11 @@ public class BlackJackGUI extends Application {
         gamePane = new BorderPane();
         gamePane.setStyle("-fx-background-color: linear-gradient(to bottom, #004d00, #000000);");
 
+        //ustawienie ikony aplikaci
         Image icon = new Image(getClass().getResourceAsStream("icon.png"));
         primaryStage.getIcons().add(icon);
 
+        // panel krupiera
         VBox topPanel = new VBox(10);
         topPanel.setAlignment(Pos.CENTER);
         topPanel.setPadding(new Insets(10));
@@ -84,6 +85,7 @@ public class BlackJackGUI extends Application {
         dealerCards.setAlignment(Pos.CENTER);
         topPanel.getChildren().addAll(dealerLabel, dealerCards);
 
+        // panel gracza
         VBox centerPanel = new VBox(10);
         centerPanel.setAlignment(Pos.CENTER);
         centerPanel.setPadding(new Insets(10));
@@ -98,11 +100,13 @@ public class BlackJackGUI extends Application {
         secondHandCards.setAlignment(Pos.CENTER);
         centerPanel.getChildren().addAll(playerLabel, playerCards, secondHandCards);
 
+        //panel dolny
         VBox bottomPanel = new VBox(15);
         bottomPanel.setAlignment(Pos.CENTER);
         bottomPanel.setPadding(new Insets(15));
         bottomPanel.setStyle("-fx-background-color: rgba(0, 0, 0, 0.3); -fx-border-color: linear-gradient(to bottom, #FFD700, #FFA500); -fx-border-width: 2; -fx-border-radius: 10;");
 
+        // zaklady
         betPanel = new HBox(10);
         betPanel.setAlignment(Pos.CENTER);
         betPanel.setPadding(new Insets(10));
@@ -118,6 +122,7 @@ public class BlackJackGUI extends Application {
         betField.setFont(Font.font("Verdana", 14));
         betField.setStyle("-fx-background-color: linear-gradient(to bottom, #FFFFFF, #E0E0E0); -fx-border-color: gold; -fx-border-width: 1; -fx-border-radius: 10; -fx-background-radius: 10; -fx-padding: 5;");
 
+        // przyciski do obstawiania
         Button chip10 = createChipButton("10", "#FF3333", "#CC0000");
         Button chip50 = createChipButton("50", "#33CC33", "#009900");
         Button chip100 = createChipButton("100", "#3333FF", "#0000CC");
@@ -150,6 +155,7 @@ public class BlackJackGUI extends Application {
         gamePane.setCenter(centerPanel);
         gamePane.setBottom(bottomPanel);
 
+        // animacja tasowania
         shuffleProgressBar = new ProgressBar(0);
         shuffleProgressBar.setPrefWidth(300);
         shufflingStatusText = new Text("Tasowanie talii...");
@@ -166,6 +172,7 @@ public class BlackJackGUI extends Application {
         mainStackPane = new StackPane();
         mainStackPane.getChildren().addAll(gamePane, shuffleOverlayPane);
 
+        // po postawieniu zakladu
         placeBetButton.setOnAction(e -> {
             try {
                 int betAmount = Integer.parseInt(betField.getText());
@@ -208,6 +215,7 @@ public class BlackJackGUI extends Application {
                             gameLogic.startGame();
                             updateUI();
 
+                            //sprawdzenie blackjacka
                             String blackjackResult = gameLogic.getBlackjackResult();
                             if (blackjackResult != null) {
                                 showResultAlert(blackjackResult);
@@ -233,6 +241,7 @@ public class BlackJackGUI extends Application {
             }
         });
 
+        // po dobraniu karty
         hitButton.setOnAction(e -> {
             gameLogic.playerHits();
             updateUI();
@@ -247,6 +256,7 @@ public class BlackJackGUI extends Application {
             }
         });
 
+        // po spasowaniu
         standButton.setOnAction(e -> {
             if (!gameLogic.isPlayingSecondHand() && gameLogic.getPlayer().hasSecondHand() && !gameLogic.isFirstHandCompleted()) {
                 gameLogic.setFirstHandCompleted(true);
@@ -257,6 +267,7 @@ public class BlackJackGUI extends Application {
             }
         });
 
+        // double down
         doubleDownButton.setOnAction(e -> {
             gameLogic.playerDoubleDown();
             updateUI();
@@ -272,6 +283,7 @@ public class BlackJackGUI extends Application {
             }
         });
 
+        //split
         splitButton.setOnAction(e -> {
             int currentHandSize = gameLogic.getPlayer().getHand().size();
             prevPlayerHandSize = currentHandSize > 0 ? currentHandSize -1 : 0;
@@ -281,6 +293,7 @@ public class BlackJackGUI extends Application {
             toggleBetting(true);
         });
 
+        //ubezpieczenie
         insuranceButton.setOnAction(e -> {
             gameLogic.buyInsurance();
             updateUI();
@@ -290,6 +303,7 @@ public class BlackJackGUI extends Application {
 
         statsButton.setOnAction(e -> showStatsWindow());
 
+        // reset
         resetButton.setOnAction(e -> {
             prevPlayerHandSize = 0;
             prevPlayerSecondHandSize = 0;
@@ -336,6 +350,7 @@ public class BlackJackGUI extends Application {
         Card holeCard = gameLogic.getDealer().getHand().get(0);
         Image faceImage = loadCardImage(holeCard).getImage();
 
+        //animacja obrotu i odkrycia karty
         RotateTransition rotation1 = new RotateTransition(Duration.millis(300), holeCardView);
         rotation1.setAxis(Rotate.Y_AXIS);
         rotation1.setFromAngle(0);
